@@ -7,7 +7,6 @@ import (
 
 var keys = []string{}
 var doors = []string{}
-var visited = map[util.Point]bool{}
 
 var directionsX = []int{1, 0, -1, 0}
 var directionsY = []int{0, 1, 0, -1}
@@ -33,7 +32,13 @@ func isKey(b byte) bool {
 	return b >= 'a' && b <= 'z'
 }
 
-func dfs(board []string, position util.Point) {
+func dfs(board []string, startingPoint util.Point) {
+	visited := map[util.Point]bool{}
+
+	dfsUtil(board, startingPoint, visited)
+}
+
+func dfsUtil(board []string, position util.Point, visited map[util.Point]bool) {
 	if !isInRange(board, position) {
 		return
 	}
@@ -59,6 +64,45 @@ func dfs(board []string, position util.Point) {
 	}
 }
 
+func topologicalSort(board []string, position util.Point, stack []byte) {
+	if !isInRange(board, position) {
+		return
+	}
+}
+
+func bfs(board []string, startPosition util.Point) {
+
+	q := util.NewPointQueue()
+	visited := make(map[util.Point]bool)
+
+	dist := make(map[util.Point]int)
+	dist[startPosition] = 0
+	q.Push(startPosition)
+
+	for q.Size() > 0 {
+		position := q.Pop()
+
+		chr := board[position.X][position.Y]
+
+		if isDoor(chr) || isKey(chr) {
+			fmt.Printf("# %c is at distance %d\n", chr, dist[position])
+		}
+
+		for t := 0; t < 4; t++ {
+			p := util.Point{
+				X: position.X + directionsX[t],
+				Y: position.Y + directionsY[t],
+			}
+
+			if isInRange(board, p) && !visited[p] {
+				visited[p] = true
+				dist[p] = dist[position] + 1
+				q.Push(p)
+			}
+		}
+	}
+}
+
 func main() {
 	lines := util.ReadLines("ch18/input.txt")
 
@@ -76,15 +120,23 @@ func main() {
 		}
 	}
 
-	dfs(lines, start)
+	// dfs(lines, start)
 
-	// for k := range visited {
-	// 	fmt.Println(k)
-	// }
+	// // for k := range visited {
+	// // 	fmt.Println(k)
+	// // }
 
-	fmt.Println(keys)
+	// fmt.Println(keys)
 
-	fmt.Println()
+	// fmt.Println()
 
-	fmt.Println(doors)
+	// fmt.Println(doors)
+
+	// s := []int{}
+
+	// topologicalSort(board, start, s)
+
+	// fmt.Println(s)
+
+	bfs(lines, start)
 }
