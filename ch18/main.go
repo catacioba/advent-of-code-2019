@@ -2,6 +2,7 @@ package main
 
 import (
 	"adventofcode/util"
+	"math"
 	"fmt"
 )
 
@@ -52,10 +53,8 @@ func dfsUtil(board []string, position util.Point, visited map[util.Point]bool) {
 	}
 
 	for t := 0; t < 4; t++ {
-		p := util.Point{
-			X: position.X + directionsX[t],
-			Y: position.Y + directionsY[t],
-		}
+		p := getNextPosition(position, t)
+
 		if !visited[p] {
 			visited[p] = true
 
@@ -81,6 +80,7 @@ func bfs(board []string, startPosition util.Point) {
 
 	for q.Size() > 0 {
 		position := q.Pop()
+		// fmt.Printf("@ %c\n", board[position.X][position.Y])
 
 		chr := board[position.X][position.Y]
 
@@ -89,16 +89,39 @@ func bfs(board []string, startPosition util.Point) {
 		}
 
 		for t := 0; t < 4; t++ {
-			p := util.Point{
-				X: position.X + directionsX[t],
-				Y: position.Y + directionsY[t],
-			}
+			p := getNextPosition(position, t)
 
 			if isInRange(board, p) && !visited[p] {
 				visited[p] = true
 				dist[p] = dist[position] + 1
 				q.Push(p)
 			}
+		}
+	}
+}
+
+func getNextPosition(position util.Point, idx int) util.Point {
+	return util.Point{
+		X: position.X + directionsX[idx],
+		Y: position.Y + directionsY[idx],
+	}
+}
+
+func solveSlow(board []string, pos util.Point, visited, keys map[util.Point]bool, totalKeys int) int {
+
+	minPath := math.MaxInt32
+
+	chr := board[pos.X][pos.Y]
+
+	if isKey(chr) {
+		
+	}
+
+	for t := 0; t < 4; t++ {
+		p := getNextPosition(pos, t)
+
+		if isInRange(p) {
+			d := 
 		}
 	}
 }
