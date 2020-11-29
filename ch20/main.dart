@@ -386,8 +386,10 @@ int bfs2(List<String> map, Map<Point, PointOrientation> portals,
 
   var finalState = State(endPos, 0);
 
+  final prev = <State, State>{};
+
   var steps = 1;
-  while (!queue.isEmpty && steps < 100000 && dist[finalState] == null) {
+  while (queue.isNotEmpty && steps < 100000 && dist[finalState] == null) {
 //    print(queue);
 
     var curState = queue.removeFirst();
@@ -417,6 +419,7 @@ int bfs2(List<String> map, Map<Point, PointOrientation> portals,
 
       if (dist[nextState] == null) {
         dist[nextState] = curDist + 1;
+        prev[nextState] = curState;
         queue.add(nextState);
       }
     }
@@ -425,6 +428,14 @@ int bfs2(List<String> map, Map<Point, PointOrientation> portals,
   }
 
   return dist[finalState];
+}
+
+void printPath(Map<State, State> prevMap, State startState, State endState) {
+  // final state = prevMap[endState];
+  // if (state == startState) {
+  //   return;
+  // }
+  // print('${state.p}');
 }
 
 void main(List<String> args) {
@@ -446,6 +457,6 @@ void main(List<String> args) {
   var startPoint = portalCodes["AA"][0];
   var endPoint = portalCodes["ZZ"][0];
 
-  print(bfs(fileContents, portals, startPoint.point, endPoint.point));
+  // print(bfs(fileContents, portals, startPoint.point, endPoint.point));
   print(bfs2(fileContents, portals, startPoint.point, endPoint.point));
 }
