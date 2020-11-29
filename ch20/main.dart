@@ -2,6 +2,8 @@ import 'dart:collection';
 import 'dart:core';
 import 'dart:io';
 
+import 'package:collection/collection.dart';
+
 enum PortalType { INSIDE, OUTSIDE }
 
 class Point {
@@ -33,9 +35,10 @@ class Point {
 
 class PointOrientation {
   Point point;
+  String portalCode;
   PortalType portalType;
 
-  PointOrientation(this.point, this.portalType);
+  PointOrientation(this.point, this.portalCode, this.portalType);
 
   @override
   bool operator ==(Object other) =>
@@ -50,7 +53,7 @@ class PointOrientation {
 
   @override
   String toString() {
-    return 'PointOrientation{point: $point, portalType: $portalType}';
+    return 'PointOrientation{point: $point, code: $portalCode, portalType: $portalType}';
   }
 }
 
@@ -96,8 +99,8 @@ bool isOk(List<String> map, Point p, bool Function(int) okFunction) {
   return false;
 }
 
-Pair<Map<Point, PointOrientation>, Map<String, List<PointOrientation>>> findPortals(
-    List<String> map) {
+Pair<Map<Point, PointOrientation>, Map<String, List<PointOrientation>>>
+    findPortals(List<String> map) {
   var h = map.length;
   var w = map[0].length;
   print("${h} ${w}");
@@ -112,10 +115,10 @@ Pair<Map<Point, PointOrientation>, Map<String, List<PointOrientation>>> findPort
         portalCodes.putIfAbsent(code, () => []);
         if (col == 0) {
           var p = Point(row, 2);
-          portalCodes[code].add(PointOrientation(p, PortalType.OUTSIDE));
+          portalCodes[code].add(PointOrientation(p, code, PortalType.OUTSIDE));
         } else {
           var p = Point(row, w - 3);
-          portalCodes[code].add(PointOrientation(p, PortalType.OUTSIDE));
+          portalCodes[code].add(PointOrientation(p, code, PortalType.OUTSIDE));
         }
       }
     }
@@ -128,10 +131,10 @@ Pair<Map<Point, PointOrientation>, Map<String, List<PointOrientation>>> findPort
         portalCodes.putIfAbsent(code, () => []);
         if (row == 0) {
           var p = Point(2, col);
-          portalCodes[code].add(PointOrientation(p, PortalType.OUTSIDE));
+          portalCodes[code].add(PointOrientation(p, code, PortalType.OUTSIDE));
         } else {
           var p = Point(row - 1, col);
-          portalCodes[code].add(PointOrientation(p, PortalType.OUTSIDE));
+          portalCodes[code].add(PointOrientation(p, code, PortalType.OUTSIDE));
         }
       }
     }
@@ -199,7 +202,8 @@ Pair<Map<Point, PointOrientation>, Map<String, List<PointOrientation>>> findPort
       if (portal != null) {
         portalCodes.putIfAbsent(portal.code, () => []);
 
-        portalCodes[portal.code].add(PointOrientation(portal.p, PortalType.INSIDE));
+        portalCodes[portal.code]
+            .add(PointOrientation(portal.p, portal.code, PortalType.INSIDE));
       }
     }
   }
@@ -211,7 +215,8 @@ Pair<Map<Point, PointOrientation>, Map<String, List<PointOrientation>>> findPort
       if (portal != null) {
         portalCodes.putIfAbsent(portal.code, () => []);
 
-        portalCodes[portal.code].add(PointOrientation(portal.p, PortalType.INSIDE));
+        portalCodes[portal.code]
+            .add(PointOrientation(portal.p, portal.code, PortalType.INSIDE));
       }
     }
   }
@@ -259,7 +264,7 @@ var dotPoints = {
   ]
 };
 
-var codeExtractors = {
+var codeExtractors = <Point, Function>{
   Point(0, 1): (List<String> map, Point p) {
     return map[p.x].substring(p.y - 1, p.y + 1);
   },
@@ -317,8 +322,8 @@ Portal checkPoint(List<String> map, Point p) {
   return null;
 }
 
-int bfs(
-    List<String> map, Map<Point, PointOrientation> portals, Point startPos, Point endPos) {
+int bfs(List<String> map, Map<Point, PointOrientation> portals, Point startPos,
+    Point endPos) {
   var queue = Queue<Point>();
 //  var visited = Set<Point>();
   var dist = Map<Point, int>();
@@ -358,9 +363,10 @@ int bfs(
 
 class State {
   Point p;
+  String code;
   int level;
 
-  State(this.p, this.level);
+  State(this.p, this.code, this.level);
 
   @override
   bool operator ==(Object other) =>
@@ -372,24 +378,45 @@ class State {
 
   @override
   int get hashCode => p.hashCode ^ level.hashCode;
+
+  @override
+  String toString() => '${code ?? ''} $p at level $level';
 }
 
-int bfs2(List<String> map, Map<Point, PointOrientation> portals,
-    Point startPos, Point endPos) {
-  var queue = Queue<State>();
-  var dist = Map<State, int>();
+int distance(Point a, Point b) {
+  return (a.x - b.x).abs() + (a.y - b.y).abs();
+}
 
-  var startState = State(startPos, 0);
+int score(State state, State finalState) {
+  return (state.level + 1) * distance(state.p, finalState.p);
+}
+
+int Function(State, State) stateComparator(State finalState) {
+  return (State a, State b) {
+    if (a.level == b.level) {
+      return distance(a.p, finalState.p).compareTo(distance(b.p, finalState.p));
+    }
+    return a.level.compareTo(b.level);
+  };
+}
+
+int bfs2(List<String> map, Map<Point, PointOrientation> portals, Point startPos,
+    Point endPos) {
+  var startState = State(startPos, null, 0);
+  var finalState = State(endPos, null, 0);
+
+  var queue = HeapPriorityQueue<State>(stateComparator(finalState));
+  testPriorityQeuue(queue);
+
+  var dist = Map<State, int>();
 
   dist[startState] = 0;
   queue.add(startState);
 
-  var finalState = State(endPos, 0);
-
-  final prev = <State, State>{};
+  // final prev = <State, State>{};
 
   var steps = 1;
-  while (queue.isNotEmpty && steps < 100000 && dist[finalState] == null) {
+  while (queue.isNotEmpty && steps < 1000000 && dist[finalState] == null) {
 //    print(queue);
 
     var curState = queue.removeFirst();
@@ -397,13 +424,14 @@ int bfs2(List<String> map, Map<Point, PointOrientation> portals,
 
     for (var dir in directionList) {
       var nextPos = curState.p + dir;
-      var nextState = State(nextPos, curState.level);
+      var nextState = State(nextPos, null, curState.level);
 
       var isValidPos = isOk(map, nextPos, isDot);
 
       if (isValidPos && !dist.containsKey(nextState)) {
         // not visited
         dist[nextState] = curDist + 1;
+        // prev[nextState] = curState;
         queue.add(nextState);
       }
     }
@@ -412,14 +440,16 @@ int bfs2(List<String> map, Map<Point, PointOrientation> portals,
     if (portalStep != null) {
       State nextState;
       if (portalStep.portalType == PortalType.OUTSIDE) {
-        nextState = State(portalStep.point, curState.level + 1);
+        nextState =
+            State(portalStep.point, portalStep.portalCode, curState.level + 1);
       } else {
-        nextState = State(portalStep.point, curState.level - 1);
+        nextState =
+            State(portalStep.point, portalStep.portalCode, curState.level - 1);
       }
 
-      if (dist[nextState] == null) {
+      if (dist[nextState] == null && nextState.level >= 0) {
         dist[nextState] = curDist + 1;
-        prev[nextState] = curState;
+        // prev[nextState] = curState;
         queue.add(nextState);
       }
     }
@@ -427,15 +457,44 @@ int bfs2(List<String> map, Map<Point, PointOrientation> portals,
     steps++;
   }
 
+  // printPath(prev, startState, finalState);
+
   return dist[finalState];
 }
 
 void printPath(Map<State, State> prevMap, State startState, State endState) {
-  // final state = prevMap[endState];
-  // if (state == startState) {
-  //   return;
-  // }
-  // print('${state.p}');
+  var state = prevMap[endState];
+
+  final path = List<State>();
+  // path.add(endState);
+
+  while (state != null && state != startState) {
+    if (state == null) {
+      print("state is null!");
+      return;
+    }
+    if (state.code != null) {
+      path.add(state);
+    }
+    state = prevMap[state];
+  }
+
+  print('Path:');
+  for (final el in path.reversed) {
+    print(el);
+  }
+}
+
+void testPriorityQeuue(PriorityQueue<State> pq) {
+  pq.add(State(Point(1, 1), null, 1));
+  pq.add(State(Point(1, 1), null, 2));
+  pq.add(State(Point(1, 1), null, 0));
+
+  final bestState = pq.removeFirst();
+
+  if (bestState.level != 0) {
+    throw StateError("wrong ordering in priority queue");
+  }
 }
 
 void main(List<String> args) {

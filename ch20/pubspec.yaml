@@ -1,0 +1,4 @@
+name: aoc_2019_ch20
+
+dependencies:
+  collection: 1.14.13
