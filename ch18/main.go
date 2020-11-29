@@ -2,7 +2,6 @@ package main
 
 import (
 	"adventofcode/util"
-	"math"
 	"fmt"
 )
 
@@ -31,6 +30,16 @@ func isDoor(b byte) bool {
 
 func isKey(b byte) bool {
 	return b >= 'a' && b <= 'z'
+}
+
+const lowerToUpper = 'a' - 'A'
+
+func toLower(b byte) byte {
+	return b - lowerToUpper
+}
+
+func toUpper(b byte) byte {
+	return b + lowerToUpper
 }
 
 func dfs(board []string, startingPoint util.Point) {
@@ -77,7 +86,9 @@ func bfs(board []string, startPosition util.Point) {
 	dist := make(map[util.Point]int)
 	dist[startPosition] = 0
 	q.Push(startPosition)
+	visited[startPosition] = true
 
+	splitCount := 0
 	for q.Size() > 0 {
 		position := q.Pop()
 		// fmt.Printf("@ %c\n", board[position.X][position.Y])
@@ -86,18 +97,29 @@ func bfs(board []string, startPosition util.Point) {
 
 		if isDoor(chr) || isKey(chr) {
 			fmt.Printf("# %c is at distance %d\n", chr, dist[position])
+
+			// if isDoor(chr) {
+			// 	keys
+			// }
 		}
 
+		possibleDirections := 0
 		for t := 0; t < 4; t++ {
 			p := getNextPosition(position, t)
 
 			if isInRange(board, p) && !visited[p] {
+				possibleDirections++
 				visited[p] = true
 				dist[p] = dist[position] + 1
 				q.Push(p)
 			}
 		}
+		if possibleDirections > 1 {
+			splitCount++
+			fmt.Printf("split occurred at %v\n", position)
+		}
 	}
+	fmt.Printf("Splits: %d\n", splitCount)
 }
 
 func getNextPosition(position util.Point, idx int) util.Point {
@@ -107,24 +129,24 @@ func getNextPosition(position util.Point, idx int) util.Point {
 	}
 }
 
-func solveSlow(board []string, pos util.Point, visited, keys map[util.Point]bool, totalKeys int) int {
+// func solveSlow(board []string, pos util.Point, visited, keys map[util.Point]bool, totalKeys int) int {
 
-	minPath := math.MaxInt32
+// 	minPath := math.MaxInt32
 
-	chr := board[pos.X][pos.Y]
+// 	chr := board[pos.X][pos.Y]
 
-	if isKey(chr) {
-		
-	}
+// 	if isKey(chr) {
 
-	for t := 0; t < 4; t++ {
-		p := getNextPosition(pos, t)
+// 	}
 
-		if isInRange(p) {
-			d := 
-		}
-	}
-}
+// 	for t := 0; t < 4; t++ {
+// 		p := getNextPosition(pos, t)
+
+// 		if isInRange(p) {
+// 			d :=
+// 		}
+// 	}
+// }
 
 func main() {
 	lines := util.ReadLines("ch18/input.txt")
