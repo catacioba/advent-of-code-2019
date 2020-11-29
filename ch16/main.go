@@ -10,30 +10,30 @@ import (
 
 var pattern = [4]int{0, 1, 0, -1}
 
-// func getPattern(size int) [][]string {
-// 	result := make([][]string, size)
+func getPattern(size int) [][]int {
+	result := make([][]int, size)
 
-// 	for row := range result {
-// 		rowPattern := make([]string, size)
+	for row := range result {
+		rowPattern := make([]int, size)
 
-// 		current := 0
-// 		cnt := 1
+		current := 0
+		cnt := 1
 
-// 		for idx := range rowPattern {
-// if cnt%(row+1) == 0 {
-// 	cnt = 0
-// 	current++
-// }
+		for idx := range rowPattern {
+			if cnt%(row+1) == 0 {
+				cnt = 0
+				current++
+			}
 
-// rowPattern[idx] = pattern[current%len(pattern)]
-// cnt++
-// 		}
+			rowPattern[idx] = pattern[current%len(pattern)]
+			cnt++
+		}
 
-// 		result[row] = rowPattern
-// 	}
+		result[row] = rowPattern
+	}
 
-// 	return result
-// }
+	return result
+}
 
 func dot(a string, rowCnt int) string {
 	// if len(a) != len(b) {
@@ -93,7 +93,8 @@ func encodeSlow(inputSignal string) string {
 	for t := 0; t < 100; t++ {
 		outputSignal := fft(inputSignal)
 
-		fmt.Println(outputSignal)
+		// fmt.Println(outputSignal)
+		// fmt.Printf("Iteration %d done\n", t+1)
 
 		inputSignal = outputSignal
 	}
@@ -192,9 +193,71 @@ func printMatrix(a [][]int) {
 	fmt.Println()
 }
 
+func testAssumption() {
+	signal := "12345678123456781234567812345678"
+
+	offset := 20
+	offsetSignal := signal[offset:]
+
+	encodeAll := encodeSlow(signal)
+	fmt.Printf("%s => %s\n", signal, encodeAll)
+	encodePart := encodeSlow(offsetSignal)
+	fmt.Printf("%s => %s\n", offsetSignal, encodePart)
+
+	for idx := offset; idx <= len(signal); idx++ {
+		if encodeAll[idx] != encodePart[idx-offset] {
+			fmt.Println("NO")
+			return
+		}
+	}
+	fmt.Println("YES")
+}
+
+func charToInt(ch byte) byte {
+	return ch - '0'
+}
+
+func intToChar(b byte) byte {
+	return '0' + byte(b)
+}
+
+func solveSmart(signal []byte) string {
+	stringSignal := string(signal)
+
+	offset, _ := strconv.Atoi(stringSignal[0:7])
+	fmt.Println(offset)
+
+	realSignal := []byte(getRealSignal(stringSignal))
+	if len(realSignal) > 2*offset {
+		fmt.Println("this would not work!")
+		return ""
+	}
+
+	offsetSignal := realSignal[offset:]
+	n := len(offsetSignal)
+	for iteration := 0; iteration < 100; iteration++ {
+		fmt.Printf("iteration %d started\n", iteration)
+		accum := byte(0)
+
+		for idx := n - 1; idx >= 0; idx-- {
+			accum = (accum + charToInt(offsetSignal[idx])) % 10
+			offsetSignal[idx] = intToChar(accum)
+		}
+
+		fmt.Printf("iteration %d done\n", iteration)
+	}
+
+	return string(offsetSignal[:8])
+}
+
 func main() {
 	// inputSignal := "19617804207202209144916044189917"
+	// inputSignal := "1234567812345678"
 	inputSignal := util.ReadLines("ch16/input.txt")[0]
+	// fmt.Printf("input len: %d\n", len(inputSignal))
+
+	// realSignal := getRealSignal(inputSignal)
+	// fmt.Printf("real input len: %d\n", len(realSignal))
 
 	// for _, v := range getPattern(8) {
 	// 	fmt.Println(v)
@@ -205,9 +268,9 @@ func main() {
 	// fmt.Println(encodeSlow(inputSignal, matrix))
 	// fmt.Println(encodeSlow(inputSignal))
 
-	inputSignal = util.ReadLines("ch16/input.txt")[0]
+	// inputSignal = util.ReadLines("ch16/input.txt")[0]
 
-	fmt.Println(encodeReal(inputSignal))
+	// fmt.Println(encodeReal(inputSignal))
 
 	// intMatrix := conv(matrix)
 
@@ -219,4 +282,9 @@ func main() {
 
 	// printMatrix(intMatrix)
 
+	// testAssumption()
+
+	fmt.Println(solveSmart([]byte(inputSignal)))
+
+	fmt.Println("Done")
 }
