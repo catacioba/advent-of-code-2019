@@ -162,39 +162,6 @@ Pair<Map<Point, PointOrientation>, Map<String, List<PointOrientation>>>
   }
   print("${topLeft}   ${bottomRight}");
 
-  // inner vertical
-//  for (var col in [topLeft.y, bottomRight.y - 1]) {
-//    for (var row in [topLeft.x, bottomRight.x - 1]) {
-//      if (isUppercase(map[row].codeUnitAt(col))) {
-//        var code = map[row][col] + map[row + 1][col];
-//        portalCodes.putIfAbsent(code, () => []);
-//        if (row == topLeft.x) {
-//          var p = Point(row - 1, col);
-//          portalCodes[code].add(p);
-//        } else {
-//          var p = Point(row + 2, col);
-//          portalCodes[code].add(p);
-//        }
-//      }
-//    }
-//  }
-//
-//  // inner horizontal
-//  for (var col in [topLeft.y, bottomRight.y - 1]) {
-//    for (var row in [topLeft.x, bottomRight.x - 1]) {
-//      if (isUppercase(map[row].codeUnitAt(col))) {
-//        var code = map[row].substring(col, col + 2);
-//        portalCodes.putIfAbsent(code, () => []);
-//        if (row == topLeft.x) {
-//          var p = Point(row - 1, col);
-//          portalCodes[code].add(p);
-//        } else {
-//          var p = Point(row + 2, col);
-//          portalCodes[code].add(p);
-//        }
-//      }
-//    }
-//  }
   for (var row = topLeft.x; row <= bottomRight.x; row++) {
     for (var col in [topLeft.y, bottomRight.y]) {
       var portal = checkPoint(map, Point(row, col));
@@ -284,17 +251,6 @@ Portal checkPoint(List<String> map, Point p) {
   var y = p.y;
 
   if (isOk(map, p, isUppercase)) {
-//    if (isOk(map, Point(x, y + 1), isUppercase)) {
-//      var code = map[x].substring(y, y + 2);
-//
-//      if (isOk(map, Point(x, y - 1), isDot)) {
-//        return Portal(code, Point(x, y - 1));
-//      }
-//      if (isOk(map, Point(x, y + 2), isDot)) {
-//        return Portal(code, Point(x, y + 2));
-//      }
-//    }
-
     for (var dirEntry in directions.entries) {
       var dirName = dirEntry.key;
       var dirs = dirEntry.value;
