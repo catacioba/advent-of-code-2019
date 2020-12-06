@@ -1,5 +1,7 @@
 package util
 
+import "container/list"
+
 type Queue struct {
 	elems []string
 	idx   int
@@ -28,31 +30,27 @@ func (q *Queue) Size() int {
 	return len(q.elems) - q.idx
 }
 
-// Point Queue
 type PointQueue struct {
-	elems []Point
-	idx   int
+	l *list.List
 }
 
 func NewPointQueue() *PointQueue {
 	return &PointQueue{
-		elems: []Point{},
-		idx:   0,
+		l: list.New(),
 	}
 }
 
 func (q *PointQueue) Push(elem Point) {
-	q.elems = append(q.elems, elem)
+	q.l.PushBack(elem)
 }
 
 func (q *PointQueue) Pop() Point {
-	if q.Size() == 0 {
-		panic("Pop on empty queue!")
-	}
-	q.idx++
-	return q.elems[q.idx-1]
+	el := q.l.Front()
+	val := el.Value.(Point)
+	q.l.Remove(el)
+	return val
 }
 
 func (q *PointQueue) Size() int {
-	return len(q.elems) - q.idx
+	return q.l.Len()
 }

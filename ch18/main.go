@@ -7,9 +7,15 @@ import (
 
 var keys = []string{}
 var doors = []string{}
+var path = []string{}
 
 var directionsX = []int{1, 0, -1, 0}
 var directionsY = []int{0, 1, 0, -1}
+
+type Board struct {
+	board []string
+	start util.Point
+}
 
 func isInRange(board []string, pos util.Point) bool {
 	if pos.X < 0 || pos.Y < 0 {
@@ -60,6 +66,9 @@ func dfsUtil(board []string, position util.Point, visited map[util.Point]bool) {
 	} else if isKey(chr) {
 		keys = append(keys, string(chr))
 	}
+	if isDoor(chr) || isKey(chr) {
+		path = append(path, string(chr))
+	}
 
 	for t := 0; t < 4; t++ {
 		p := getNextPosition(position, t)
@@ -67,7 +76,7 @@ func dfsUtil(board []string, position util.Point, visited map[util.Point]bool) {
 		if !visited[p] {
 			visited[p] = true
 
-			dfs(board, p)
+			dfsUtil(board, p, visited)
 		}
 	}
 }
@@ -78,48 +87,58 @@ func topologicalSort(board []string, position util.Point, stack []byte) {
 	}
 }
 
-func bfs(board []string, startPosition util.Point) {
+// type state struct {
+// 	pos   util.Point
+// 	keys  []byte
+// 	gates []byte
+// }
 
+// func newState(p util.Point) *state {
+// 	return &state{
+// 		pos:   p,
+// 		keys:  nil,
+// 		gates: nil,
+// 	}
+// }
+
+func (b *Board) bfs() {
 	q := util.NewPointQueue()
+
 	visited := make(map[util.Point]bool)
-
 	dist := make(map[util.Point]int)
-	dist[startPosition] = 0
-	q.Push(startPosition)
-	visited[startPosition] = true
+	prev := make(map[util.Point]util.Point)
 
-	splitCount := 0
+	dist[b.start] = 0
+	q.Push(b.start)
+	visited[b.start] = true
+
 	for q.Size() > 0 {
 		position := q.Pop()
-		// fmt.Printf("@ %c\n", board[position.X][position.Y])
 
-		chr := board[position.X][position.Y]
+		chr := b.board[position.X][position.Y]
 
 		if isDoor(chr) || isKey(chr) {
 			fmt.Printf("# %c is at distance %d\n", chr, dist[position])
-
-			// if isDoor(chr) {
-			// 	keys
-			// }
 		}
 
 		possibleDirections := 0
 		for t := 0; t < 4; t++ {
 			p := getNextPosition(position, t)
 
-			if isInRange(board, p) && !visited[p] {
+			if isInRange(b.board, p) && !visited[p] {
 				possibleDirections++
+
 				visited[p] = true
 				dist[p] = dist[position] + 1
+				prev[p] = position
+
 				q.Push(p)
 			}
 		}
 		if possibleDirections > 1 {
-			splitCount++
 			fmt.Printf("split occurred at %v\n", position)
 		}
 	}
-	fmt.Printf("Splits: %d\n", splitCount)
 }
 
 func getNextPosition(position util.Point, idx int) util.Point {
@@ -148,40 +167,42 @@ func getNextPosition(position util.Point, idx int) util.Point {
 // 	}
 // }
 
-func main() {
-	lines := util.ReadLines("ch18/input.txt")
-
-	var start util.Point
-
+func getStartPosition(lines []string) util.Point {
 	for x := range lines {
 		for y := range lines[x] {
 			if lines[x][y] == '@' {
-				start = util.Point{
+				return util.Point{
 					X: x,
 					Y: y,
 				}
-				break
 			}
 		}
 	}
+	panic("Start point not found!")
+}
 
-	// dfs(lines, start)
+func main() {
+	lines := util.ReadLines("ch18/input.txt")
+	start := getStartPosition(lines)
+
+	// board := Board{board: lines, start: start}
+	// board.bfs()
+
+	dfs(lines, start)
 
 	// // for k := range visited {
 	// // 	fmt.Println(k)
 	// // }
 
-	// fmt.Println(keys)
-
-	// fmt.Println()
-
-	// fmt.Println(doors)
+	fmt.Println(path)
+	fmt.Println()
+	fmt.Println(keys)
+	fmt.Println()
+	fmt.Println(doors)
 
 	// s := []int{}
 
 	// topologicalSort(board, start, s)
 
 	// fmt.Println(s)
-
-	bfs(lines, start)
 }
