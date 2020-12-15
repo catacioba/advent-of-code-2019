@@ -1,4 +1,4 @@
-package main
+package ch01
 
 import (
 	"bufio"
@@ -7,7 +7,23 @@ import (
 	"strconv"
 )
 
-func main() {
+func PartOne() {
+	fin, _ := os.Open("ch01/ch01.txt")
+	defer fin.Close()
+
+	scanner := bufio.NewScanner(fin)
+
+	cnt := 0
+	for scanner.Scan() {
+		value, _ := strconv.Atoi(scanner.Text())
+
+		cnt += value/3 - 2
+	}
+
+	fmt.Println(cnt)
+}
+
+func PartTwo() {
 	fin, _ := os.Open("ch01/ch01.txt")
 	defer fin.Close()
 
