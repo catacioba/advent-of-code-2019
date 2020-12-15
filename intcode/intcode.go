@@ -1,5 +1,12 @@
 package intcode
 
+import (
+	"adventofcode/util"
+	"strings"
+)
+
+const Memory = 100000
+
 type Operation struct {
 	code           int
 	parameterModes []int
@@ -15,8 +22,8 @@ type Program struct {
 	Output             chan int
 }
 
-func NewIntCodeProgram(numbers []int) Program {
-	return Program{
+func NewIntCodeProgram(numbers []int) *Program {
+	return &Program{
 		code:               numbers,
 		instructionPointer: 0,
 		relativeBase:       0,
@@ -25,11 +32,20 @@ func NewIntCodeProgram(numbers []int) Program {
 	}
 }
 
-func NewIntCodeProgramWithChannels(numbers []int, inChannel, outChannel chan int) Program {
+func NewIntCodeProgramFromFile(filename string) *Program {
+	line := util.ReadLines(filename)[0]
+	numbersAsInt := util.ConvertStrArrToIntArr(strings.Split(line, ","))
+	numbesWithMemory := make([]int, Memory)
+	copy(numbesWithMemory, numbersAsInt)
+
+	return NewIntCodeProgram(numbesWithMemory)
+}
+
+func NewIntCodeProgramWithChannels(numbers []int, inChannel, outChannel chan int) *Program {
 	numbersCopy := make([]int, len(numbers))
 	copy(numbersCopy, numbers)
 
-	return Program{
+	return &Program{
 		code:               numbersCopy,
 		instructionPointer: 0,
 		relativeBase:       0,
@@ -66,9 +82,9 @@ func (program *Program) getParameterMode(position int) int {
 }
 
 func (program *Program) getParam(position int) int {
-	//mask := getMask(position)
+	// mask := getMask(position)
 	//
-	//paramMode := getParamFromMask(program.opCode, mask)
+	// paramMode := getParamFromMask(program.opCode, mask)
 	paramMode := program.getParameterMode(position)
 
 	switch paramMode {
@@ -84,9 +100,9 @@ func (program *Program) getParam(position int) int {
 }
 
 func (program *Program) getOutputParam(position int) int {
-	//mask := getMask(position)
+	// mask := getMask(position)
 	//
-	//paramMode := getParamFromMask(program.opCode, mask)
+	// paramMode := getParamFromMask(program.opCode, mask)
 	paramMode := program.getParameterMode(position)
 
 	switch paramMode {
@@ -101,12 +117,8 @@ func (program *Program) getOutputParam(position int) int {
 }
 
 func (program *Program) Step() {
-	//program.opCode = program.code[program.instructionPointer]
+	// program.opCode = program.code[program.instructionPointer]
 	program.readNextInstruction()
-
-	//op := program.getOp(program.)
-
-	//reader := bufio.NewReader(os.Stdin)
 
 	switch program.operation.code {
 	case 99:
@@ -131,28 +143,28 @@ func (program *Program) Step() {
 	case 3:
 		param1 := program.getOutputParam(1)
 
-		//fmt.Println("Input operation")
+		// fmt.Println("Input operation")
 
-		//select {
-		//case in := <-program.Input:
+		// select {
+		// case in := <-program.Input:
 
 		in := <-program.Input
 
-		//fmt.Print("Enter text: ")
-		//text, _ := reader.ReadString('\n')
-		//in, _ := strconv.Atoi(strings.TrimSpace(text))
+		// fmt.Print("Enter text: ")
+		// text, _ := reader.ReadString('\n')
+		// in, _ := strconv.Atoi(strings.TrimSpace(text))
 
 		program.code[param1] = in
 		program.instructionPointer += 2
 
-		//default:
+		// default:
 		//	panic("no input given")
-		//}
+		// }
 	case 4:
 		param1 := program.getParam(1)
 
-		//fmt.Println("Output operation")
-		//fmt.Println(param1)
+		// fmt.Println("Output operation")
+		// fmt.Println(param1)
 		program.Output <- param1
 
 		program.instructionPointer += 2
@@ -225,31 +237,10 @@ func (program *Program) Run() {
 	}
 }
 
-//func getParamFromMask(op, mask int) int {
-//	return op / mask % 10
-//}
-//
-//func getMask(pos int) int {
-//	res := 100
-//
-//	for pos > 1 {
-//		res *= 10
-//		pos--
-//	}
-//
-//	return res
-//}
-//
-//func (program *Program) getOp(op int) int {
-//	return op % 100
-//}
-//
-//func (program *IntCodeProgram) resize(size int) {
-//	if len(program.code) < size {
-//
-//		dst := make([]int, size)
-//		copy(dst, program.code)
-//
-//		program.code = dst
-//	}
-//}
+func (program *Program) UpdateMemory(location, value int) {
+	program.code[location] = value
+}
+
+func (program *Program) Location(location int) int {
+	return program.code[location]
+}
