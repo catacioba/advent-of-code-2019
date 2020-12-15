@@ -2,11 +2,84 @@ package main
 
 import (
 	"adventofcode/util"
+	"bufio"
 	"fmt"
 	"math"
+	"os"
 	"strconv"
 	"strings"
 )
+
+func getPoints(wire string) map[util.Point]bool {
+	points := make(map[util.Point]bool)
+
+	x := 0
+	y := 0
+
+	for _, path := range strings.Split(wire, ",") {
+		dir := path[:1]
+		cnt, _ := strconv.Atoi(path[1:])
+
+		//fmt.Printf("%s %d \n", dir, cnt)
+		switch dir {
+		case "R":
+			for idx := 0; idx < cnt; idx++ {
+				x++
+				points[util.Point{X: x, Y: y}] = true
+			}
+		case "L":
+			for idx := 0; idx < cnt; idx++ {
+				x--
+				points[util.Point{X: x, Y: y}] = true
+			}
+		case "U":
+			for idx := 0; idx < cnt; idx++ {
+				y++
+				points[util.Point{X: x, Y: y}] = true
+			}
+		case "D":
+			for idx := 0; idx < cnt; idx++ {
+				y--
+				points[util.Point{X: x, Y: y}] = true
+			}
+		}
+	}
+
+	return points
+}
+
+func PartOne() {
+
+	fin, _ := os.Open("ch03/input.txt")
+	defer fin.Close()
+
+	scanner := bufio.NewScanner(fin)
+
+	scanner.Scan()
+	wire1 := scanner.Text()
+	scanner.Scan()
+	wire2 := scanner.Text()
+
+	points1 := getPoints(wire1)
+	points2 := getPoints(wire2)
+
+	//closestPoint := Point{0,0}
+	closestDist := 10000000.0
+
+	for point, _ := range points1 {
+		_, ok := points2[point]
+
+		if ok {
+			dist := math.Abs(float64(point.X)) + math.Abs(float64(point.Y))
+			if closestDist > dist {
+				closestDist = dist
+				//closestPoint = point
+			}
+		}
+	}
+
+	fmt.Println(closestDist)
+}
 
 func getDirection(dir string) util.Point {
 	switch dir {
@@ -22,21 +95,21 @@ func getDirection(dir string) util.Point {
 	panic("unknown direction!")
 }
 
-type Path struct {
+type path struct {
 	direction util.Point
 	steps     int
 }
 
-func parseWire(wire string) []Path {
+func parseWire(wire string) []path {
 	paths := strings.Split(wire, ",")
 
-	var res []Path
+	var res []path
 
-	for _, path := range paths {
-		dir := path[:1]
-		steps, _ := strconv.Atoi(path[1:])
+	for _, p := range paths {
+		dir := p[:1]
+		steps, _ := strconv.Atoi(p[1:])
 
-		res = append(res, Path{getDirection(dir), steps})
+		res = append(res, path{getDirection(dir), steps})
 	}
 
 	return res
@@ -109,40 +182,12 @@ func getSteps(wire string, otherWire map[util.Point]int) int {
 	panic("this should not happen")
 }
 
-func main() {
+func PartTwo() {
 
 	lines := util.ReadLines("ch03/input.txt")
 
 	wire1 := lines[0]
 	wire2 := lines[1]
-
-	//points1 := parseWire(wire1)
-	//points2 := parseWire(wire2)
-	//
-	//wire1Position := util.Point{}
-	//wire2Position := util.Point{}
-	//
-	//steps := 0
-	//idx1 := 0
-	//path1 := Path{}
-	//idx2 := 0
-	//path2 := Path{}
-	//
-	//for wire1Position != wire2Position {
-	//	if path1.steps == 0 {
-	//		path1 = points1[idx1]
-	//		idx1++
-	//	}
-	//	if path2.steps == 0 {
-	//		path2 = points2[idx2]
-	//		idx2++
-	//	}
-	//
-	//	move(&wire1Position, path1.direction)
-	//	path1.steps--
-	//	move(&wire2Position, path2.direction)
-	//	path2.steps--
-	//}
 
 	points1 := getPointsWithSteps(wire1)
 	points2 := getPointsWithSteps(wire2)
@@ -160,5 +205,4 @@ func main() {
 	}
 
 	fmt.Println(minSteps)
-	//fmt.Println(getSteps(wire2, points1))
 }
