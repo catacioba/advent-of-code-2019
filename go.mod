@@ -1,4 +1,4 @@
-module adventofcode
+module aoc
 
 go 1.13
 

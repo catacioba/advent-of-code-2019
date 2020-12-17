@@ -1,7 +1,7 @@
 package intcode
 
 import (
-	"adventofcode/util"
+	"aoc/util"
 	"strings"
 )
 

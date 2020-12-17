@@ -1,7 +1,7 @@
-package main
+package ch02
 
 import (
-	"adventofcode/intcode"
+	"aoc/intcode"
 	"fmt"
 )
 

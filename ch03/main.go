@@ -1,7 +1,7 @@
-package main
+package ch03
 
 import (
-	"adventofcode/util"
+	"aoc/util"
 	"bufio"
 	"fmt"
 	"math"

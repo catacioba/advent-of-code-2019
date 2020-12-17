@@ -1,2 +1,7 @@
 .idea/**
 .vscode/**
+
+*.exe
+
+**/.dart_tool
+**/.packages
