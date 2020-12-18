@@ -1,10 +1,9 @@
-package main
+package ch13
 
 import (
-	"adventofcode/intcode"
-	"adventofcode/util"
+	"aoc/intcode"
+	"aoc/util"
 	"fmt"
-	"strings"
 	"time"
 )
 
@@ -14,9 +13,8 @@ type Board struct {
 	maxWidth  int
 	minWidth  int
 
-	tiles  map[util.Point]int
-	blocks int
-	Score  int
+	tiles map[util.Point]int
+	Score int
 
 	BallPosition   util.Point
 	PaddlePosition util.Point
@@ -29,7 +27,6 @@ func newBoard() Board {
 		maxWidth:  0,
 		minWidth:  0,
 		tiles:     make(map[util.Point]int),
-		blocks:    0,
 		Score:     0,
 	}
 }
@@ -37,28 +34,12 @@ func newBoard() Board {
 func (board *Board) setTile(x, y, tileId int) {
 	point := util.Point{X: x, Y: y}
 
-	existingId, found := board.tiles[point]
+	board.maxHeight = util.MyMax(board.maxHeight, y)
+	board.minHeight = util.MyMin(board.minHeight, y)
 
-	if found {
-		//fmt.Printf("Tile %v changed from %d to %d\n", point, existingId, tileId)
-		if existingId == 2 && tileId != 2 {
-			board.blocks--
-		}
-		if existingId != 2 && tileId == 2 {
-			board.blocks++
-		}
-	} else {
-		//fmt.Printf("Tile %v set to %d\n", point, tileId)
-		board.maxHeight = util.MyMax(board.maxHeight, y)
-		board.minHeight = util.MyMin(board.minHeight, y)
+	board.maxWidth = util.MyMax(board.maxWidth, x)
+	board.minWidth = util.MyMin(board.minWidth, x)
 
-		board.maxWidth = util.MyMax(board.maxWidth, x)
-		board.minWidth = util.MyMin(board.minWidth, x)
-
-		if tileId == 2 {
-			board.blocks++
-		}
-	}
 	if tileId == 4 {
 		board.BallPosition = point
 	} else if tileId == 3 {
@@ -67,16 +48,8 @@ func (board *Board) setTile(x, y, tileId int) {
 	board.tiles[point] = tileId
 }
 
-func (board *Board) getBlocks() int {
-	return board.blocks
-}
-
 func (board *Board) draw() {
 	fmt.Println("\033[2J")
-	//fmt.Println()
-	//fmt.Println()
-	//fmt.Println()
-
 	fmt.Printf("Score: %d\n", board.Score)
 	for y := board.minHeight; y <= board.maxHeight; y++ {
 		for x := board.minWidth; x <= board.maxWidth; x++ {
@@ -103,51 +76,74 @@ func (board *Board) draw() {
 	}
 }
 
-///*
-//	(0,0) 	=> 	stays
-//	(1,1) 	=> 	left to right down
-//	(-1,-1) => 	left to right up
-//	(-1,1)	=> 	right to left down
-//	(1,-1)	=>	right to left up
-//	-1 		=> 	invalid
-//*/
-//func getBallDirection(pos1, pos2 util.Point) {
-//	if pos1 == pos2 {
-//		return 0
-//	}
-//	if pos1.X == pos
-//}
-
 func (board *Board) getBallX() int {
 	return board.BallPosition.X
 }
 
-func main() {
-	line := util.ReadLines("ch13/input.txt")[0]
-	numbers := util.ConvertStrArrToIntArr(strings.Split(line, ","))
-	numbersBigger := make([]int, 100000)
-	copy(numbersBigger, numbers)
+func (board *Board) readUserInput() int {
+	var input string
+	fmt.Println("Enter direction:")
+	_, _ = fmt.Scanln(&input)
 
-	numbersBigger[0] = 2
+	if input == "h" {
+		return -1
+	} else if input == "l" {
+		return 1
+	} else {
+		return 0
+	}
+}
 
-	program := intcode.NewIntCodeProgram(numbersBigger)
+func (board *Board) tryPlay() int {
+	xBall := board.getBallX()
+	xPaddle := board.PaddlePosition.X
+
+	if xPaddle < xBall {
+		return 1
+	} else if xPaddle == xBall {
+		return 0
+	} else {
+		return -1
+	}
+}
+
+func PartOne() {
+	program := intcode.NewIntCodeProgramFromFile("ch13/input.txt")
 
 	go program.Run()
-	//program.IsRunning = true
-	//program.RunUntilIO()
+
+	count := 0
+	for {
+		select {
+		case _ = <-program.Output:
+			_ = <-program.Output
+			tile := <-program.Output
+
+			if tile == 2 {
+				count += 1
+			}
+		}
+
+		if !program.IsRunning {
+			break
+		}
+	}
+
+	fmt.Println(count)
+}
+
+func PartTwo() {
+	program := intcode.NewIntCodeProgramFromFile("ch13/input.txt")
+
+	program.UpdateMemory(0, 2)
+
+	go program.Run()
 
 	board := newBoard()
 
 	steps := 0
-	//previousBallPosition := board.BallPosition
-
 	for {
 		steps++
-
-		if steps >= 1051 {
-			board.draw()
-			time.Sleep(1 * time.Second)
-		}
 
 		select {
 		case x := <-program.Output:
@@ -159,27 +155,18 @@ func main() {
 			} else {
 				board.setTile(x, y, tile)
 			}
-		//fmt.Printf("%d %d %d\n", x, y, tile)
-		default:
-			//ballPosition := board.BallPosition
-			xBall := board.getBallX()
-			xPaddle := board.PaddlePosition.X
-
-			if xPaddle < xBall {
-				program.Input <- 1
-			} else if xPaddle == xBall {
-				program.Input <- 0
-			} else {
-				program.Input <- -1
+		case <-time.After(2 * time.Millisecond):
+			if steps % 1000 == 0 {
+				board.draw()
 			}
-
+			program.Input <- board.tryPlay()
 		}
 
 		if !program.IsRunning {
+			fmt.Printf("Final score is: %d\n", board.Score)
 			break
 		}
 	}
 
-	fmt.Println(board.getBlocks())
-
+	board.draw()
 }
