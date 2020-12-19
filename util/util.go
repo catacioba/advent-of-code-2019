@@ -26,7 +26,6 @@ func Contains(array []int, el int) bool {
 func permuteAux(array []int, tmp []int, result *[][]int) {
 	if len(tmp) == len(array) {
 		*result = append(*result, tmp)
-		//fmt.Println(tmp)
 		return
 	}
 
@@ -67,10 +66,6 @@ func MyMin(a, b int) int {
 		return a
 	}
 	return b
-}
-
-func GetDistance(p1, p2 Point) int {
-	return MyAbs(p1.X-p2.X) + MyAbs(p1.Y-p2.Y)
 }
 
 func Lcm(a, b int) int {

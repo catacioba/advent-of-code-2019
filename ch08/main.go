@@ -1,7 +1,7 @@
-package main
+package ch08
 
 import (
-	"adventofcode/util"
+	"aoc/util"
 	"fmt"
 	"github.com/fatih/color"
 	"math"

@@ -1,7 +1,7 @@
-package main
+package ch10
 
 import (
-	"adventofcode/util"
+	"aoc/util"
 	"fmt"
 	"math"
 	"sort"
@@ -135,7 +135,7 @@ func main() {
 	for k, v := range reachableMap {
 
 		sort.Slice(v, func(i, j int) bool {
-			return util.GetDistance(maxPoint, v[i]) < util.GetDistance(maxPoint, v[j])
+			return maxPoint.Distance(v[i]) < maxPoint.Distance(v[j])
 		})
 
 		points = append(points, LinePointList{

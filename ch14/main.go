@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode/util"
+	"aoc/util"
 	"fmt"
 	"math"
 	"strconv"
@@ -193,7 +193,7 @@ func topologicalSortSolve(reactions map[string]Reaction, fuelQuantity int) int {
 	}
 
 	for queue.Size() != 0 {
-		el := queue.Pop()
+		el := queue.Pop().(string)
 
 		// fmt.Printf(" %s ", el)
 		var requiredQuantity int

@@ -1,7 +1,7 @@
-package main
+package ch18
 
 import (
-	"adventofcode/util"
+	"aoc/util"
 	"fmt"
 )
 
@@ -102,7 +102,7 @@ func topologicalSort(board []string, position util.Point, stack []byte) {
 // }
 
 func (b *Board) bfs() {
-	q := util.NewPointQueue()
+	q := util.NewQueue()
 
 	visited := make(map[util.Point]bool)
 	dist := make(map[util.Point]int)
@@ -113,7 +113,7 @@ func (b *Board) bfs() {
 	visited[b.start] = true
 
 	for q.Size() > 0 {
-		position := q.Pop()
+		position := q.Pop().(util.Point)
 
 		chr := b.board[position.X][position.Y]
 

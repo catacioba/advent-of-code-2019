@@ -1,7 +1,7 @@
-package main
+package ch16
 
 import (
-	"adventofcode/util"
+	"aoc/util"
 	"fmt"
 	"math"
 	"strconv"

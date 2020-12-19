@@ -3,54 +3,30 @@ package util
 import "container/list"
 
 type Queue struct {
-	elems []string
-	idx   int
+	l *list.List
 }
 
 func NewQueue() *Queue {
 	return &Queue{
-		elems: []string{},
-		idx:   0,
-	}
-}
-
-func (q *Queue) Push(elem string) {
-	q.elems = append(q.elems, elem)
-}
-
-func (q *Queue) Pop() string {
-	if q.Size() == 0 {
-		panic("Pop on empty queue!")
-	}
-	q.idx++
-	return q.elems[q.idx-1]
-}
-
-func (q *Queue) Size() int {
-	return len(q.elems) - q.idx
-}
-
-type PointQueue struct {
-	l *list.List
-}
-
-func NewPointQueue() *PointQueue {
-	return &PointQueue{
 		l: list.New(),
 	}
 }
 
-func (q *PointQueue) Push(elem Point) {
+func (q *Queue) Push(elem interface{}) {
 	q.l.PushBack(elem)
 }
 
-func (q *PointQueue) Pop() Point {
+func (q *Queue) Pop() interface{} {
 	el := q.l.Front()
-	val := el.Value.(Point)
+	val := el.Value
 	q.l.Remove(el)
 	return val
 }
 
-func (q *PointQueue) Size() int {
+func (q *Queue) Size() int {
 	return q.l.Len()
+}
+
+func (q *Queue) IsEmpty() bool {
+	return q.Size() == 0
 }

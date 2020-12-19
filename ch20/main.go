@@ -1,7 +1,7 @@
-package main
+package ch20
 
 import (
-	"adventofcode/util"
+	"aoc/util"
 	"fmt"
 )
 

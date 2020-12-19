@@ -1,7 +1,7 @@
-package main
+package ch12
 
 import (
-	"adventofcode/util"
+	"aoc/util"
 	"fmt"
 	"strconv"
 	"strings"

@@ -1,7 +1,7 @@
-package main
+package ch06
 
 import (
-	"adventofcode/util"
+	"aoc/util"
 	"fmt"
 	"strings"
 )

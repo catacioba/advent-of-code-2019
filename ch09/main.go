@@ -1,8 +1,8 @@
-package main
+package ch09
 
 import (
-	"adventofcode/intcode"
-	"adventofcode/util"
+	"aoc/intcode"
+	"aoc/util"
 	"strings"
 )
 

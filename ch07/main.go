@@ -1,8 +1,8 @@
-package main
+package ch07
 
 import (
-	"adventofcode/intcode"
-	"adventofcode/util"
+	"aoc/intcode"
+	"aoc/util"
 	"fmt"
 	"math"
 	"strings"
