@@ -143,9 +143,6 @@ func (r *robot) explore() util.Point {
 	return targetPosition
 }
 
-const red = "\033[0;31m"
-const noColor = "\033[0m"
-
 func drawGrid(grid map[util.Point]int, currentX, currentY int) {
 	// find grid bounds.
 	minX := 0
@@ -166,10 +163,10 @@ func drawGrid(grid map[util.Point]int, currentX, currentY int) {
 			tile, found := grid[util.Point{X: x, Y: y}]
 
 			if x == currentX && y == currentY {
-				fmt.Printf("%s", red)
+				fmt.Printf("%s", util.Red)
 			}
 			if x == 0 && y == 0 {
-				fmt.Printf("%s%c%s", red, 'X', noColor)
+				fmt.Printf("%s%c%s", util.Red, 'X', util.NoColor)
 			} else {
 				if found {
 					switch tile {
@@ -178,7 +175,7 @@ func drawGrid(grid map[util.Point]int, currentX, currentY int) {
 					case empty:
 						fmt.Printf("%c", '.')
 					case final:
-						fmt.Printf("%s%c%s", red, 'o', noColor)
+						fmt.Printf("%s%c%s", util.Red, 'o', util.NoColor)
 					}
 				} else {
 					fmt.Printf("%c", ' ')
@@ -186,7 +183,7 @@ func drawGrid(grid map[util.Point]int, currentX, currentY int) {
 			}
 
 			if x == currentX && y == currentY {
-				fmt.Printf("%s", noColor)
+				fmt.Printf("%s", util.NoColor)
 			}
 		}
 		fmt.Println()

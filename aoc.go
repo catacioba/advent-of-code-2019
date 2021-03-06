@@ -7,12 +7,14 @@ import (
 	"aoc/ch04"
 	"aoc/ch13"
 	"aoc/ch15"
+	"aoc/ch17"
+	"aoc/ch19"
 	"flag"
 	"fmt"
 	"log"
 )
 
-var challengeMap = map[int]map[int]func() {
+var challengeMap = map[int]map[int]func(){
 	1: {
 		1: ch01.PartOne,
 		2: ch01.PartTwo,
@@ -36,6 +38,14 @@ var challengeMap = map[int]map[int]func() {
 	15: {
 		1: ch15.PartOne,
 		2: ch15.PartTwo,
+	},
+	17: {
+		1: ch17.PartOne,
+		2: ch17.PartTwo,
+	},
+	19: {
+		1: ch19.PartOne,
+		2: ch19.PartTwo,
 	},
 }
 
