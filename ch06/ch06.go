@@ -6,33 +6,6 @@ import (
 	"strings"
 )
 
-//func getOrCreate(planets map[string]util.Node, planetName string) {
-//	planet, ok := planets[planetName]
-//
-//	if !ok {
-//		planet = util.Node{planetName
-//		}
-//	}
-//	return planet
-//}
-//
-//func createOrbitTree(lines []string) map[string]util.Node {
-//	res := make(map[string]util.Node)
-//
-//	for _, line := range lines {
-//		fmt.Println(line)
-//
-//		objects := strings.Split(line, ")")
-//
-//		left := objects[0]
-//		right := objects[1]
-//
-//
-//	}
-//
-//	return res
-//}
-
 type OrbitInfo struct {
 	directOrbit string
 	value       string
@@ -53,7 +26,7 @@ func goUp(orbitInfoMap map[string]*OrbitInfo, planet string) int {
 	return planetInfo.orbitCount
 }
 
-func main() {
+func Solve() {
 	lines := util.ReadLines("ch06/input.txt")
 
 	orbitInfoMap := make(map[string]*OrbitInfo)
@@ -81,14 +54,11 @@ func main() {
 		totalOrbits += orbits
 	}
 
-	//fmt.Println(orbitInfoMap)
 	fmt.Println(totalOrbits)
 
 	san := orbitInfoMap["SAN"]
-	//fmt.Println(san)
 
 	you := orbitInfoMap["YOU"]
-	//fmt.Println(you)
 
 	// get common ancestor
 	leftAncestors := make(map[string]bool)
@@ -107,7 +77,6 @@ func main() {
 		_, ok := leftAncestors[it.value]
 
 		if ok {
-			//fmt.Println(it)
 			commonAncestor = it
 			break
 		}

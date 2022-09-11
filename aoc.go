@@ -5,6 +5,10 @@ import (
 	"aoc/ch02"
 	"aoc/ch03"
 	"aoc/ch04"
+	"aoc/ch05"
+	"aoc/ch06"
+	"aoc/ch07"
+	"aoc/ch08"
 	"aoc/ch13"
 	"aoc/ch15"
 	"aoc/ch17"
@@ -15,7 +19,7 @@ import (
 	"log"
 )
 
-var challengeMap = map[int]map[int]func() {
+var challengeMap = map[int]map[int]func(){
 	1: {
 		1: ch01.PartOne,
 		2: ch01.PartTwo,
@@ -31,6 +35,22 @@ var challengeMap = map[int]map[int]func() {
 	4: {
 		1: ch04.PartOne,
 		2: ch04.PartTwo,
+	},
+	5: {
+		1: ch05.PartOne,
+		2: ch05.PartTwo,
+	},
+	6: {
+		1: ch06.Solve,
+		2: ch06.Solve,
+	},
+	7: {
+		1: ch07.PartOne,
+		2: ch07.PartTwo,
+	},
+	8: {
+		1: ch08.Solve,
+		2: ch08.Solve,
 	},
 	13: {
 		1: ch13.PartOne,

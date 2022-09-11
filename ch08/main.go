@@ -3,7 +3,6 @@ package ch08
 import (
 	"aoc/util"
 	"fmt"
-	"github.com/fatih/color"
 	"math"
 )
 
@@ -18,21 +17,11 @@ func decodeSpaceImage(img []int, height, width int) [][]int {
 		decodedImage[i] = make([]int, width)
 	}
 
-	//for layer := 0; layer < layers; layer++ {
-	//	it := layer * pixelsPerLayer
-	//
-	//	layerPixels := make()
-	//}
-
 	for x := 0; x < height; x++ {
 		for y := 0; y < width; y++ {
-			//fmt.Printf("### x=%d y=%d ###\n", x, y)
 			for layer := 0; layer < layers; layer++ {
-				//start := layer * pixelsPerLayer
-				//end := start + pixelsPerLayer
 
 				pixel := img[layer*pixelsPerLayer+x*width+y]
-				//fmt.Println(pixel)
 				decodedImage[x][y] = pixel
 
 				if pixel != 2 {
@@ -92,23 +81,19 @@ func convertStringToArray(str string) []int {
 }
 
 func printImage(img [][]int) {
-	red := color.New(color.FgRed).PrintfFunc()
-	black := color.New(color.FgBlack).PrintfFunc()
-
 	for _, row := range img {
 		for _, pixel := range row {
 			if pixel == 1 {
-				red("%d ", pixel)
+				fmt.Printf("%s%d%s", util.Red, pixel, util.NoColor)
 			} else {
-				black("%d ", pixel)
+				fmt.Printf("%d", pixel)
 			}
 		}
 		fmt.Println()
 	}
 }
 
-func main() {
-
+func Solve() {
 	line := util.ReadLines("ch08/input.txt")[0]
 
 	image := convertStringToArray(line)

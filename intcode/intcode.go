@@ -235,6 +235,8 @@ func (program *Program) Run() {
 		program.readNextInstruction()
 		program.Step()
 	}
+
+	close(program.Output)
 }
 
 func (program *Program) UpdateMemory(location, value int) {
