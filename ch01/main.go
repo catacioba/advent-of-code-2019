@@ -8,7 +8,7 @@ import (
 )
 
 func PartOne() {
-	fin, _ := os.Open("ch01/ch01.txt")
+	fin, _ := os.Open("ch01/input.txt")
 	defer fin.Close()
 
 	scanner := bufio.NewScanner(fin)
@@ -24,7 +24,7 @@ func PartOne() {
 }
 
 func PartTwo() {
-	fin, _ := os.Open("ch01/ch01.txt")
+	fin, _ := os.Open("ch01/input.txt")
 	defer fin.Close()
 
 	scanner := bufio.NewScanner(fin)
