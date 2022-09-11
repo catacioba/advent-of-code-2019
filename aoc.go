@@ -9,6 +9,7 @@ import (
 	"aoc/ch06"
 	"aoc/ch07"
 	"aoc/ch08"
+	"aoc/ch09"
 	"aoc/ch13"
 	"aoc/ch15"
 	"aoc/ch17"
@@ -51,6 +52,10 @@ var challengeMap = map[int]map[int]func(){
 	8: {
 		1: ch08.Solve,
 		2: ch08.Solve,
+	},
+	9: {
+		1: ch09.PartOne,
+		2: ch09.PartTwo,
 	},
 	13: {
 		1: ch13.PartOne,
