@@ -13,10 +13,12 @@ import (
 	"aoc/ch13"
 	"aoc/ch15"
 	"aoc/ch17"
+	"aoc/ch18"
 	"aoc/ch19"
 	"aoc/ch21"
 	"aoc/ch23"
 	"aoc/ch24"
+	"aoc/ch25"
 	"flag"
 	"fmt"
 	"log"
@@ -71,6 +73,10 @@ var challengeMap = map[int]map[int]func(){
 		1: ch17.PartOne,
 		2: ch17.PartTwo,
 	},
+	18: {
+		1: ch18.PartOne,
+		2: ch18.PartTwo,
+	},
 	19: {
 		1: ch19.PartOne,
 		2: ch19.PartTwo,
@@ -86,6 +92,10 @@ var challengeMap = map[int]map[int]func(){
 	24: {
 		1: ch24.PartOne,
 		2: ch24.PartTwo,
+	},
+	25: {
+		1: ch25.PartOne,
+		2: ch25.PartTwo,
 	},
 }
 
