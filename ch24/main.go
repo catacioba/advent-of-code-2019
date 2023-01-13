@@ -40,10 +40,10 @@ func (g *grid) print() {
 var dx = []int8{-1, 0, 1, 0}
 var dy = []int8{0, -1, 0, 1}
 var rd = [][2]util.Point{
-	{{4, 5}, {0, 5}},
-	{{0, 5}, {4, 5}},
-	{{0, 1}, {0, 5}},
-	{{0, 5}, {0, 1}},
+	{{X: 4, Y: 5}, {X: 0, Y: 5}},
+	{{X: 0, Y: 5}, {X: 4, Y: 5}},
+	{{X: 0, Y: 1}, {X: 0, Y: 5}},
+	{{X: 0, Y: 5}, {X: 0, Y: 1}},
 }
 
 func (g *grid) adjacentBugs(i, j int) int {
